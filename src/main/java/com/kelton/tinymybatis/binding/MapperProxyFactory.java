@@ -1,9 +1,11 @@
-package com.kelton.tinymybatis.proxy;
+package com.kelton.tinymybatis.binding;
 
 import com.kelton.tinymybatis.session.SqlSession;
 
+import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @Author zhouzekun
@@ -12,13 +14,18 @@ import java.util.Map;
 public class MapperProxyFactory<T> {
 
     private Class<T> mapperInterface;
+    private Map<Method, MapperMethod> methodCache = new ConcurrentHashMap<Method, MapperMethod>();
 
     public MapperProxyFactory(Class<T> mapperInterface) {
         this.mapperInterface = mapperInterface;
     }
 
+    public Map<Method, MapperMethod> getMethodCache() {
+        return methodCache;
+    }
+
     public T newInstant(SqlSession sqlSession) {
-        MapperProxy<T> mapperProxy = new MapperProxy<>(sqlSession, mapperInterface);
+        MapperProxy<T> mapperProxy = new MapperProxy<>(sqlSession, mapperInterface, methodCache);
         return (T) Proxy.newProxyInstance(this.getClass().getClassLoader(), new Class[]{mapperInterface}, mapperProxy);
     }
 }

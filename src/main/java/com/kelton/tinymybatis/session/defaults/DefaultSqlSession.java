@@ -1,6 +1,8 @@
 package com.kelton.tinymybatis.session.defaults;
 
-import com.kelton.tinymybatis.proxy.MapperRegistry;
+import com.kelton.tinymybatis.binding.MapperRegistry;
+import com.kelton.tinymybatis.mapping.MappedStatement;
+import com.kelton.tinymybatis.session.Configuration;
 import com.kelton.tinymybatis.session.SqlSession;
 
 /**
@@ -9,31 +11,39 @@ import com.kelton.tinymybatis.session.SqlSession;
  */
 public class DefaultSqlSession implements SqlSession {
 
-    private MapperRegistry mapperRegistry;
+    private Configuration configuration;
 
-    public DefaultSqlSession(MapperRegistry mapperRegistry) {
-        this.mapperRegistry = mapperRegistry;
+    public DefaultSqlSession(Configuration configuration) {
+        this.configuration = configuration;
     }
 
     @Override
     public <T> T selectOne(String statement) {
-        return (T)("selectOne简单实现" + statement);
+        // 目前只是简单打印一下SQL语句，后续可以操作JDBC进行数据库操作、管理事务等
+        MappedStatement mappedStatement = configuration.getMappedStatement(statement);
+        return (T) ("selectOne简单实现" + statement+ ", 待执行的SQL:\n\t" + mappedStatement.getSql());
     }
 
     @Override
     public <T> T selectOne(String statement, Object parameter) {
-        return (T)("不带参的selectOne简单实现" + statement + "," + parameter);
+        MappedStatement mappedStatement = configuration.getMappedStatement(statement);
+        return (T) ("不带参的selectOne简单实现" + statement + ", 待执行的SQL:\n\t"+ mappedStatement.getSql());
     }
 
     @Override
     public <T> T getMapper(Class<T> type) {
-        return mapperRegistry.getMapper(type, this);
+        return configuration.getMapper(type, this);
+    }
+
+    @Override
+    public Configuration getConfiguration() {
+        return configuration;
     }
 
     @Override
     public String toString() {
         return "DefaultSqlSession{" +
-                "mapperRegistry=" + mapperRegistry +
+                "configuration=" + configuration +
                 '}';
     }
 }
