@@ -1,14 +1,9 @@
 package com.kelton.tinymybatis.proxy;
 
-import com.kelton.tinymybatis.Main;
-import com.kelton.tinymybatis.dao.UserDao;
+import com.kelton.tinymybatis.session.SqlSession;
 
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.util.Arrays;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * @Author zhouzekun
@@ -22,7 +17,7 @@ public class MapperProxyFactory<T> {
         this.mapperInterface = mapperInterface;
     }
 
-    public T newInstant(Map<String, String> sqlSession) {
+    public T newInstant(SqlSession sqlSession) {
         MapperProxy<T> mapperProxy = new MapperProxy<>(sqlSession, mapperInterface);
         return (T) Proxy.newProxyInstance(this.getClass().getClassLoader(), new Class[]{mapperInterface}, mapperProxy);
     }
