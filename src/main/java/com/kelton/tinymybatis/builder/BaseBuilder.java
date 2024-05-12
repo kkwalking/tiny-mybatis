@@ -1,6 +1,7 @@
 package com.kelton.tinymybatis.builder;
 
 import com.kelton.tinymybatis.session.Configuration;
+import com.kelton.tinymybatis.type.TypeAliasRegistry;
 
 /**
  * @Author zhouzekun
@@ -9,9 +10,11 @@ import com.kelton.tinymybatis.session.Configuration;
 public abstract class BaseBuilder {
 
     protected final Configuration configuration;
+    protected final TypeAliasRegistry typeAliasRegistry;
 
     public BaseBuilder(Configuration configuration) {
         this.configuration = configuration;
+        this.typeAliasRegistry = this.configuration.getTypeAliasRegistry();
     }
 
     public Configuration getConfiguration() {

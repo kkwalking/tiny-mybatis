@@ -1,7 +1,11 @@
 package com.kelton.tinymybatis.session;
 
 import com.kelton.tinymybatis.binding.MapperRegistry;
+import com.kelton.tinymybatis.datasource.druid.DruidDataSourceFactory;
+import com.kelton.tinymybatis.mapping.Environment;
 import com.kelton.tinymybatis.mapping.MappedStatement;
+import com.kelton.tinymybatis.transaction.jdbc.JdbcTransactionFactory;
+import com.kelton.tinymybatis.type.TypeAliasRegistry;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -11,6 +15,15 @@ import java.util.Map;
  * @Date 2024/5/8 15:11
  */
 public class Configuration {
+    /**
+     * 类型别名注册机
+     */
+    protected final TypeAliasRegistry typeAliasRegistry = new TypeAliasRegistry();
+
+    /**
+     * 环境
+     */
+    protected Environment environment;
 
     /**
      * 映射注册机
@@ -21,6 +34,11 @@ public class Configuration {
      * 映射的语句，存在Map里
      */
     protected final Map<String, MappedStatement> mappedStatements = new HashMap<>();
+
+    public Configuration() {
+        typeAliasRegistry.registerAlias("JDBC", JdbcTransactionFactory.class);
+        typeAliasRegistry.registerAlias("DRUID", DruidDataSourceFactory.class);
+    }
 
     public void addMappers(String packageName) {
         mapperRegistry.addMappers(packageName);
@@ -44,5 +62,17 @@ public class Configuration {
 
     public MappedStatement getMappedStatement(String id) {
         return mappedStatements.get(id);
+    }
+
+    public TypeAliasRegistry getTypeAliasRegistry() {
+        return typeAliasRegistry;
+    }
+
+    public Environment getEnvironment() {
+        return environment;
+    }
+
+    public void setEnvironment(Environment environment) {
+        this.environment = environment;
     }
 }
