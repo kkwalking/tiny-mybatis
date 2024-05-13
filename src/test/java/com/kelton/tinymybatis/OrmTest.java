@@ -36,8 +36,10 @@ public class OrmTest {
         UserDao userDao = sqlSession.getMapper(UserDao.class);
 
         // 3. 测试验证
-        User res = userDao.queryUserInfoById("1");
-        logger.info("测试结果：{}", res.toString());
+        for (int i = 0; i < 50; i++) {
+            User user = userDao.queryUserInfoById(1L);
+            logger.info("测试结果：{}", JSON.toJSONString(user));
+        }
     }
 
     @Test

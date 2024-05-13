@@ -2,6 +2,8 @@ package com.kelton.tinymybatis.session;
 
 import com.kelton.tinymybatis.binding.MapperRegistry;
 import com.kelton.tinymybatis.datasource.druid.DruidDataSourceFactory;
+import com.kelton.tinymybatis.datasource.pooled.PooledDataSourceFactory;
+import com.kelton.tinymybatis.datasource.unpooled.UnpooledDataSourceFactory;
 import com.kelton.tinymybatis.mapping.Environment;
 import com.kelton.tinymybatis.mapping.MappedStatement;
 import com.kelton.tinymybatis.transaction.jdbc.JdbcTransactionFactory;
@@ -38,6 +40,8 @@ public class Configuration {
     public Configuration() {
         typeAliasRegistry.registerAlias("JDBC", JdbcTransactionFactory.class);
         typeAliasRegistry.registerAlias("DRUID", DruidDataSourceFactory.class);
+        typeAliasRegistry.registerAlias("POOLED", PooledDataSourceFactory.class);
+        typeAliasRegistry.registerAlias("UNPOOLED", UnpooledDataSourceFactory.class);
     }
 
     public void addMappers(String packageName) {

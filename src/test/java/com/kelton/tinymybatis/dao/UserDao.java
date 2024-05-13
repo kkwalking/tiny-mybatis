@@ -8,5 +8,5 @@ import com.kelton.tinymybatis.po.User;
  */
 public interface UserDao {
 
-    User queryUserInfoById(String username);
+    User queryUserInfoById(Long id);
 }
