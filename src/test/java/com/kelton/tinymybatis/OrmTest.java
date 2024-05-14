@@ -40,6 +40,7 @@ public class OrmTest {
             User user = userDao.queryUserInfoById(1L);
             logger.info("测试结果：{}", JSON.toJSONString(user));
         }
+        reader.close();
     }
 
     @Test

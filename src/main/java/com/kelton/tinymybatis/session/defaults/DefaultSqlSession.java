@@ -37,15 +37,22 @@ public class DefaultSqlSession implements SqlSession {
             MappedStatement mappedStatement = configuration.getMappedStatement(statement);
             Environment environment = configuration.getEnvironment();
 
-            Connection connection = environment.getDataSource().getConnection();
+            try (Connection connection = environment.getDataSource().getConnection();){
+                BoundSql boundSql = mappedStatement.getBoundSql();
+                PreparedStatement preparedStatement = connection.prepareStatement(boundSql.getSql());
+                preparedStatement.setLong(1, Long.parseLong(((Object[]) parameter)[0].toString()));
+                ResultSet resultSet = preparedStatement.executeQuery();
 
-            BoundSql boundSql = mappedStatement.getBoundSql();
-            PreparedStatement preparedStatement = connection.prepareStatement(boundSql.getSql());
-            preparedStatement.setLong(1, Long.parseLong(((Object[]) parameter)[0].toString()));
-            ResultSet resultSet = preparedStatement.executeQuery();
-
-            List<T> objList = resultSet2Obj(resultSet, Class.forName(boundSql.getResultType()));
-            return objList.get(0);
+                List<T> objList = resultSet2Obj(resultSet, Class.forName(boundSql.getResultType()));
+                return objList.get(0);
+            }
+//            Connection connection = environment.getDataSource().getConnection();
+//            BoundSql boundSql = mappedStatement.getBoundSql();
+//            PreparedStatement preparedStatement = connection.prepareStatement(boundSql.getSql());
+//            preparedStatement.setLong(1, Long.parseLong(((Object[]) parameter)[0].toString()));
+//            ResultSet resultSet = preparedStatement.executeQuery();
+//            List<T> objList = resultSet2Obj(resultSet, Class.forName(boundSql.getResultType()));
+//            return objList.get(0);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
