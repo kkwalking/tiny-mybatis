@@ -4,8 +4,16 @@ import com.kelton.tinymybatis.binding.MapperRegistry;
 import com.kelton.tinymybatis.datasource.druid.DruidDataSourceFactory;
 import com.kelton.tinymybatis.datasource.pooled.PooledDataSourceFactory;
 import com.kelton.tinymybatis.datasource.unpooled.UnpooledDataSourceFactory;
+import com.kelton.tinymybatis.executor.Executor;
+import com.kelton.tinymybatis.executor.SimpleExecutor;
+import com.kelton.tinymybatis.executor.resultset.DefaultResultSetHandler;
+import com.kelton.tinymybatis.executor.resultset.ResultSetHandler;
+import com.kelton.tinymybatis.executor.statement.PreparedStatementHandler;
+import com.kelton.tinymybatis.executor.statement.StatementHandler;
+import com.kelton.tinymybatis.mapping.BoundSql;
 import com.kelton.tinymybatis.mapping.Environment;
 import com.kelton.tinymybatis.mapping.MappedStatement;
+import com.kelton.tinymybatis.transaction.Transaction;
 import com.kelton.tinymybatis.transaction.jdbc.JdbcTransactionFactory;
 import com.kelton.tinymybatis.type.TypeAliasRegistry;
 
@@ -78,5 +86,27 @@ public class Configuration {
 
     public void setEnvironment(Environment environment) {
         this.environment = environment;
+    }
+
+
+    /**
+     * 创建结果集处理器
+     */
+    public ResultSetHandler newResultSetHandler(Executor executor, MappedStatement mappedStatement, BoundSql boundSql) {
+        return new DefaultResultSetHandler(executor, mappedStatement, boundSql);
+    }
+
+    /**
+     * 生产执行器
+     */
+    public Executor newExecutor(Transaction transaction) {
+        return new SimpleExecutor(this, transaction);
+    }
+
+    /**
+     * 创建语句处理器
+     */
+    public StatementHandler newStatementHandler(Executor executor, MappedStatement mappedStatement, Object parameter, ResultHandler resultHandler, BoundSql boundSql) {
+        return new PreparedStatementHandler(executor, mappedStatement, parameter, resultHandler, boundSql);
     }
 }

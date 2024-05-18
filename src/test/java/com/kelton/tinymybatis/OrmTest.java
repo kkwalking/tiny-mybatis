@@ -1,15 +1,12 @@
 package com.kelton.tinymybatis;
 
 import com.alibaba.fastjson2.JSON;
-import com.kelton.tinymybatis.builder.xml.XMLConfigBuilder;
 import com.kelton.tinymybatis.dao.UserDao;
 import com.kelton.tinymybatis.io.Resources;
 import com.kelton.tinymybatis.po.User;
-import com.kelton.tinymybatis.session.Configuration;
 import com.kelton.tinymybatis.session.SqlSession;
 import com.kelton.tinymybatis.session.SqlSessionFactory;
 import com.kelton.tinymybatis.session.SqlSessionFactoryBuilder;
-import com.kelton.tinymybatis.session.defaults.DefaultSqlSession;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,18 +41,16 @@ public class OrmTest {
     }
 
     @Test
-    public void test_selectOne() throws IOException {
-        // 解析 XML
-        Reader reader = Resources.getResourceAsReader("mybatis-config-datasource.xml");
-        XMLConfigBuilder xmlConfigBuilder = new XMLConfigBuilder(reader);
-        Configuration configuration = xmlConfigBuilder.parse();
+    public void test_SqlSessionFactory() throws IOException {
+        // 1. 从SqlSessionFactory中获取SqlSession
+        SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(Resources.getResourceAsReader("mybatis-config-datasource.xml"));
+        SqlSession sqlSession = sqlSessionFactory.openSession();
 
-        // 获取 DefaultSqlSession
-        SqlSession sqlSession = new DefaultSqlSession(configuration);
+        // 2. 获取映射器对象
+        UserDao userDao = sqlSession.getMapper(UserDao.class);
 
-        // 执行查询：默认是一个集合参数
-        Object[] req = {1L};
-        Object res = sqlSession.selectOne("com.kelton.tinymybatis.dao.UserDao.queryUserInfoById", req);
-        logger.info("测试结果：{}", JSON.toJSONString(res));
+        // 3. 测试验证
+        User user = userDao.queryUserInfoById(1L);
+        logger.info("测试结果：{}", JSON.toJSONString(user));
     }
 }
